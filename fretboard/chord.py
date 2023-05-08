@@ -1,6 +1,5 @@
 import copy
 
-import attrdict
 import svgwrite
 import yaml
 
@@ -35,11 +34,9 @@ class Chord(object):
 
         self.fingers = list(fingers) if fingers else []
 
-        self.style = attrdict.AttrDict(
-            dict_merge(
-                copy.deepcopy(self.default_style),
-                style or {}
-            )
+        self.style = dict_merge(
+            copy.deepcopy(self.default_style),
+            style or {}
         )
 
     def get_barre_fret(self):
@@ -53,7 +50,7 @@ class Chord(object):
             first_fret = 0
         else:
             first_fret = min(filter(lambda pos: pos != 0, fretted_positions))
-        return (first_fret, first_fret + 4)
+        return first_fret, first_fret + 4
 
     def draw(self):
         self.fretboard = Fretboard(
@@ -99,9 +96,10 @@ class Chord(object):
                 self.fretboard.add_string_label(
                     string=string,
                     label='X' if is_muted else 'O',
-                    font_color=self.style.string.muted_font_color if is_muted else self.style.string.open_font_color
-
+                    font_color=self.style["string"]["muted_font_color"] if is_muted
+                    else self.style["string"]["open_font_color"]
                 )
+
             elif fret is not None and fret != barre_fret:
                 # Add the fret marker
                 try:
